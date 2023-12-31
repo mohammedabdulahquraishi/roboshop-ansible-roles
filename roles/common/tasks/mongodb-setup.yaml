@@ -1,34 +1,34 @@
 - name: copying mongodb repo
-    ansible.builtin.copy:
-      src: mongo.repo
-      dest: /etc/yum.repos.d/mongo.repo
+  ansible.builtin.copy:
+    src: mongo.repo
+    dest: /etc/yum.repos.d/mongo.repo
 
-  - name: install mongodb
-    ansible.builtin.package:
-      name: mongodb-org
-      state: present  
+- name: install mongodb
+  ansible.builtin.package:
+    name: mongodb-org
+    state: present  
 
-  - name: "get the catalogue entries count"
-    ansible.builtin.command: mongo --host mongodb.littlesimba.online --quiet --eval 'db = db. getSiblingDB("catalogue"); db.products.count()'
-    register: products_count
-    when: component == "catalogue"
+- name: "get the catalogue entries count"
+  ansible.builtin.command: mongo --host mongodb.littlesimba.online --quiet --eval 'db = db. getSiblingDB("catalogue"); db.products.count()'
+  register: products_count
+  when: component == "catalogue"
 
   
-  - name: "get the user entries count"
-    ansible.builtin.command:  mongo --host mongodb.littlesimba.online --quiet --eval 'db = db. getSiblingDB("users"); db.users.count()'
-    register: users_count
-    when: component == "user"
+- name: "get the user entries count"
+  ansible.builtin.command:  mongo --host mongodb.littlesimba.online --quiet --eval 'db = db. getSiblingDB("users"); db.users.count()'
+  register: users_count
+  when: component == "user"
 
   # - name: print the count
   #   ansible.builtin.debug:
   #     msg: "entries count: {{entries_count}}"
 
-  - name: "load catalogue data"
-    ansible.builtin.shell: "mongo --host mongodb.littlesimba.online < /app/schema/catalogue.js"
-    when: products_count.stdout == "0" and component == "catalogue"
-    ignore_errors: true
+- name: "load catalogue data"
+  ansible.builtin.shell: "mongo --host mongodb.littlesimba.online < /app/schema/catalogue.js"
+  when: products_count.stdout == "0" and component == "catalogue"
+  ignore_errors: true
 
-  - name: "load user data"
-    ansible.builtin.shell: "mongo --host mongodb.littlesimba.online < /app/schema/user.js"
-    when: users_count.stdout == "0" and component == "user"
-    ignore_errors: true
+- name: "load user data"
+  ansible.builtin.shell: "mongo --host mongodb.littlesimba.online < /app/schema/user.js"
+  when: users_count.stdout == "0" and component == "user"
+  ignore_errors: true
