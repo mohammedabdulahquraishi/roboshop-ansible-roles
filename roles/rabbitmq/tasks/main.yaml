@@ -17,6 +17,8 @@
 
 - name: create rabbitmq user
   ansible.builtin.command: "rabbitmqctl add_user {{rq_user}} {{rq_password}}"
+  vars_files:
+  - variables.yaml
 
 - name: set permissions
   ansible.builtin.command: rabbitmqctl set_permissions -p / roboshop ".*" ".*" ".*"
